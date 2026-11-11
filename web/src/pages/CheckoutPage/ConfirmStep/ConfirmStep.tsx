@@ -13,7 +13,14 @@ type ConfirmStepProps = {
   name: string;
   email: string;
 };
-
+/**
+ * Confirms the order created by `CheckoutPage` and redirects to `/orders/:id`.
+ * It runs once on mount, guarded by `startedRef` so React StrictMode does not
+ * send two requests. If the confirmation fails, it shows the API error and a
+ * retry button that re-sends only the confirmation, since the order already
+ * exists. This is correct: inventory and totals are computed by the backend at
+ * creation, and retrying is safe because only `pending` orders can be confirmed.
+ */
 export function ConfirmStep({ order, name, email }: ConfirmStepProps) {
   const navigate = useNavigate();
   const startedRef = useRef(false);

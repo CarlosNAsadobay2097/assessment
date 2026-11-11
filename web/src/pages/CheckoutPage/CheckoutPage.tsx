@@ -13,20 +13,18 @@ import type { CheckoutState, Order } from '~/types';
 import { ConfirmStep } from './ConfirmStep';
 
 /**
- * TODO (frontend)
- *
- * Wire this page up. You already receive the selected tickets in
- * `location.state` (see CheckoutState).
- *
- * 1. Validate name + email with react-hook-form (Yup is already a dependency).
- * 2. Show a summary with the same 10% fee as the event page (`feeFromSubtotal`).
- * 3. On submit: useApiMutation with `createOrder`, then `confirmOrder`.
- * 4. Surface API errors (sold out, validation) and a submitting state.
- *
- * Suggested route after success: `/orders/:orderId`
- *
- *   const { mutateAsync: create } = useApiMutation<Order, Record<string, never>, CreateOrderBody>(createOrder);
- *   const { mutateAsync: confirm } = useApiMutation<Order, { id: string }, ConfirmOrderBody>(confirmOrder, { id });
+ * Receives the selected tickets through `location.state`
+ * (`CheckoutState`), validates name and email with react-hook-form + Yup, shows
+ * the summary with the same 10% fee as the event page (`feeFromSubtotal`) and,
+ * on submit, creates the order with `useApiMutation(createOrder)` sending only
+ * `ticketTypeId` and `quantity` (the API rejects extra fields). If creation
+ * fails, the API message is shown inline and the button stays disabled while
+ * submitting; if it succeeds, the page renders `ConfirmStep`, which confirms the
+ * order and redirects to `/orders/:id`. This is correct: the order is created
+ * only in the submit handler (never in an effect), so a double click cannot
+ * create two orders, and confirmation is delegated to `ConfirmStep` to avoid
+ * duplicating that request. Known limitation: refreshing the page loses
+ * `location.state` and redirects to the event list.
  */
 
 const schema = object({

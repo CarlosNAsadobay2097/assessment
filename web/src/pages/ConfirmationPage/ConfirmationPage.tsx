@@ -4,18 +4,15 @@ import { formatEventWhen } from '~/lib/datetime';
 import { formatUsd } from '~/lib/money';
 import type { EventRecord, Order } from '~/types';
 /**
- * TODO (frontend)
- *
- * Load the confirmed order with useApiQuery and `orderById`:
- *
- *   const { data: order, isPending, isError } = useApiQuery<Order>(
- *     orderById,
- *     { id: orderId },
- *     { enabled: Boolean(orderId) },
- *   );
- *
- * Show event / ticket lines, buyer name and email, and total paid.
- * Handle loading and not-found states. Reuse formatUsd.
+ * It reads `orderId` from the route, loads
+ * the order with `useApiQuery(orderById, { id }, { enabled })` and, once it
+ * exists, loads its event with `eventById` to show title, venue and date. It
+ * handles the missing-id, loading and not-found states, and displays the ticket
+ * lines, buyer name and email, subtotal, fee and total using `formatUsd`
+ * (`formatEventWhen` for the date). This is correct: everything comes from the
+ * API by id, so the page survives a reload and works for both `pending` and
+ * `confirmed` orders; the event query is optional and does not block the
+ * receipt. No local state is needed because the order is the source of truth.
  */
 export function ConfirmationPage() {
   const { orderId = '' } = useParams();
